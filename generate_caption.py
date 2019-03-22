@@ -13,7 +13,7 @@ from utils import *
 dataDir='.'
 dataType='train2017'
 
-embedding_size = 128
+embedding_size = 256
 cell_state_size = 512
 num_words = 15000
 activation_vector_length = 4096
@@ -28,7 +28,7 @@ def load_image(path,size=(224,224,)):
     return img
 
 
-def generate_captions(vgg_model,language_model,tokenizer,path='train2017/000000000009.jpg',max_tokens=30):
+def generate_captions(vgg_model,language_model,tokenizer,path='train2017/000000000025.jpg',max_tokens=30):
     img = load_image(path)
     image_batch = np.expand_dims(img, axis=0)
     activations = vgg_model.predict(image_batch)
@@ -53,16 +53,11 @@ def generate_captions(vgg_model,language_model,tokenizer,path='train2017/0000000
     # plt.show()
 
 capsAnnFile='{}/annotations/captions_{}.json'.format(dataDir,dataType)
-instAnnFile='{}/annotations/instances_{}.json'.format(dataDir,dataType)
-
-coco_caps=COCO(capsAnnFile)
-coco_inst=COCO(instAnnFile)
 
 start = 'ssstrt '
 end = ' eenddd'
 
-id_list = getAllIds(coco_inst)
-captions = get_captions(id_list,coco_caps)
+captions = getCaptions(file = capsAnnFile)
 captions_marked = [[str(start)+str(info)+str(end) for info in cap] for cap in captions]
 all_caps_train = get_train_captions(captions_marked,cap_all=True)
 
@@ -91,4 +86,4 @@ language_model = Model(inputs=[image_activation_input,lang_model_input],outputs=
 path_checkpoint = 'model_weights.keras'
 language_model.load_weights(path_checkpoint)
 
-generate_captions(vgg_model,language_model,tokenizer,path='train2017/000000000009.jpg',max_tokens=30)
+generate_captions(vgg_model,language_model,tokenizer,path='000000000025.jpg',max_tokens=30)

@@ -6,7 +6,7 @@ from tensorflow.python.keras import optimizers
 from tensorflow.python.keras.callbacks import ModelCheckpoint, TensorBoard
 from tensorflow.python.keras import backend as K
 
-from pycocotools.coco import COCO
+# from pycocotools.coco import COCO
 import numpy as np
 import matplotlib.pyplot as plt
 import h5py
@@ -28,20 +28,14 @@ epoch_end = 20
 num_words = 15000
 
 capsAnnFile='{}/annotations/captions_{}.json'.format(dataDir,dataType)
-instAnnFile='{}/annotations/instances_{}.json'.format(dataDir,dataType)
-
-coco_caps=COCO(capsAnnFile)
-coco_inst=COCO(instAnnFile)
 
 activation_file = h5py.File('vgg_activations.h5','r')
 vgg_activations = activation_file['last_layer_activations'][:]
 
-id_list = getAllIds(coco_inst)
-
 start = 'ssstrt '
 end = ' eenddd'
 
-captions = get_captions(id_list,coco_caps)
+captions = getCaptions(file = capsAnnFile)
 captions_marked = [[str(start)+str(info)+str(end) for info in cap] for cap in captions]
 all_caps_train = get_train_captions(captions_marked,cap_all=True)
 
@@ -88,8 +82,11 @@ language_model.compile(optimizer=optimizer,
 
 
 path_checkpoint = 'model_weights.keras'
+callback_checkpoint = ModelCheckpoint(filepath=path_checkpoint,
+                                      verbose=1,
+                                      save_weights_only=True)
 callback_tensorboard = TensorBoard(log_dir='./train_logs/',histogram_freq=0,write_graph=False)
-callbacks = [callback_tensorboard]
+callbacks = [callback_checkpoint, callback_tensorboard]
 
 for i in range(epoch_start,epoch_end,1):
     generator = data_generator(train_tokens,id_map,vgg_activations,batch_size=batch_size,single_caption=False)
@@ -99,4 +96,3 @@ for i in range(epoch_start,epoch_end,1):
                                 epochs=i+1,
                                 callbacks=callbacks,
                                  initial_epoch = i)
-    language_model.save(path_checkpoint)

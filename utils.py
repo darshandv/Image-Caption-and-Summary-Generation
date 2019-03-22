@@ -2,7 +2,15 @@ from tensorflow.python.keras.preprocessing.text import Tokenizer
 from tensorflow.python.keras.preprocessing.sequence import pad_sequences
 import numpy as np
 import tensorflow as tf
+import json
 
+# Initialize required data in first few cells
+dataDir='.'
+dataType='train2017'
+capsAnnFile='{}/annotations/captions_{}.json'.format(dataDir,dataType)
+
+
+# If using pycocotools this funcition is necessary
 def getAllIds(coco_inst) :
     cats = coco_inst.loadCats(coco_inst.getCatIds())
     nms = [cat['name'] for cat in cats]
@@ -19,6 +27,7 @@ def getAllIds(coco_inst) :
     
 #     return anns
 
+# If using pycocotools this funcition is necessary
 def get_captions(id_list,coco_caps):
     captions = []
     for ids in id_list:
@@ -28,6 +37,22 @@ def get_captions(id_list,coco_caps):
         captions.append(data) 
     
     return captions
+
+def getCaptions(file = capsAnnFile):
+    dataset = json.load(open(file, 'r'))
+    annotations = dataset['annotations']
+    captions_dict = {}
+    for node in annotations:
+        caption = node['caption']
+        id = node['image_id']
+        if id not in captions_dict:
+            captions_dict[id] = []
+        captions_dict[id].append(caption)
+    sorted_captions = sorted(captions_dict.items(),key = lambda x:x[0])
+    final_captions = []
+    for i in sorted_captions:
+        final_captions.append(i[1])
+    return final_captions
 
 def get_train_captions(captions_marked,i=0,cap_all=False):
     if cap_all:

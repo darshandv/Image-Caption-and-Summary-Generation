@@ -1,7 +1,10 @@
+*.jpg
 annotations*
 cocoapi
 Dataset-Flickr8k
 train2017
+val2017
+app.py
 train_logs
 *zip
 *h5
