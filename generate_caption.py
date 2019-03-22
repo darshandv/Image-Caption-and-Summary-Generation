@@ -3,7 +3,7 @@ from tensorflow.python.keras.models import Model
 from tensorflow.python.keras.layers import Input, Dense, Embedding
 from tensorflow.python.keras.layers.recurrent import GRU
 
-from pycocotools.coco import COCO
+# from pycocotools.coco import COCO
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
