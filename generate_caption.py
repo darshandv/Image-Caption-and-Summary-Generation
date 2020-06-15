@@ -65,6 +65,8 @@ tokenizer = TokenizerExt(all_caps_train,num_words=num_words,oov_token=num_words+
 train_tokens = tokenizer.captions_to_tokens(captions_marked)
 # print('Total words:',len(tokenizer.word_counts))
 
+######################## Model ###################
+
 image_model = VGG16(include_top=True, weights='imagenet')
 VGG_last_layer = image_model.get_layer('fc2')
 vgg_model = Model(inputs = image_model.input, outputs = VGG_last_layer.output)
